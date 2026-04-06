@@ -294,7 +294,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* ═══════════════════════════════════════════════
    ⚙️  AYARLAR — Buraya Apps Script URL'nizi girin
 ═══════════════════════════════════════════════ */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2W-vinDplMJgl6Itfi7QDRvftskkeTS fXVBgTW99LJJCfn0ss6pTEmVi96GbOJgHqNA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2W-vinDplMJgl6Itfi7QDRvftskkeTSfXVBgTW99LJJCfn0ss6pTEmVi96GbOJgHqNA/exec";
 // Örnek: "https://script.google.com/macros/s/AKfyc.../exec"
 
 /* ═══════════════════════════════════════════════
@@ -388,7 +388,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkScriptUrl() {
-  if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbx2W-vinDplMJgl6Itfi7QDRvftskkeTSfXVBgTW99LJJCfn0ss6pTEmVi96GbOJgHqNA/exec" || !SCRIPT_URL.startsWith('http')) {
+  if (SCRIPT_URL === "BURAYA_APPS_SCRIPT_URL_YAPISTIRIN" || !SCRIPT_URL.startsWith('http')) {
     document.getElementById('configBar').classList.add('show');
   }
 }
