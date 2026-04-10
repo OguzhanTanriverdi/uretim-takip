@@ -36,8 +36,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* FORM */
 .form-screen{display:none;padding:10px 14px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;}
-.card-header{padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:visible;margin-bottom:10px;}
+.card-header{padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius) var(--radius) 0 0;}
 .card-title{font-size:12px;font-weight:700;}
 .card-body{padding:14px;display:flex;flex-direction:column;gap:12px;}
 
@@ -51,7 +51,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* AUTOCOMPLETE */
 .ac-wrap{position:relative;}
-.ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;z-index:500;max-height:190px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.6);}
+.ac-dropdown{position:fixed;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;z-index:9999;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 32px rgba(0,0,0,.8);min-width:200px;}
 .ac-dropdown.open{display:block;}
 .ac-item{padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;}
 .ac-item:last-child{border-bottom:none;}
@@ -98,8 +98,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ozet-val.blue{color:var(--accent2);}
 
 /* DURUŞ */
-.durus-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;animation:fadeIn .2s ease;}
-.durus-hdr{padding:8px 12px;background:rgba(239,68,68,.07);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.durus-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:visible;margin-bottom:8px;animation:fadeIn .2s ease;}
+.durus-hdr{padding:8px 12px;background:rgba(239,68,68,.07);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;border-radius:12px 12px 0 0;}
 .durus-title{font-size:12px;font-weight:700;color:var(--red);}
 .durus-rm{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 6px;}
 .durus-rm:hover{color:var(--red);}
@@ -184,58 +184,38 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
           <div class="spill" onclick="selShift(this,'GECE')">🌙 GECE</div>
         </div>
       </div>
-      <div class="field"><label>Operatör (Adınız)</label><select id="operatorSel"></select></div>
+      <!-- MESAİ -->
+      <div id="mesaiRow" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;font-weight:600;">Mesai var mı?</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="molaInfo">Mola: 60 dk (mesaisiz gündüz)</div>
+        </div>
+        <label class="toggle" style="position:relative;width:48px;height:26px;flex-shrink:0;">
+          <input type="checkbox" id="mesaiToggle" onchange="onMesaiChange()" style="opacity:0;width:0;height:0;">
+          <span style="position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:26px;cursor:pointer;transition:.3s;" id="mesaiSlider"></span>
+          <span id="mesaiThumb" style="position:absolute;height:18px;width:18px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.3s;pointer-events:none;"></span>
+        </label>
+      </div>
+      <div class="field">
+        <label>Operatör (Adınız) <span style="color:var(--red)">*</span></label>
+        <div class="ac-wrap">
+          <input type="text" id="operatorInput" placeholder="Adınızı yazın veya seçin…" autocomplete="off"
+            oninput="acOpen('oper',this.value)" onfocus="acOpen('oper',this.value)" onkeydown="acKey(event,'oper')">
+          <div class="ac-dropdown" id="acOper"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ÜRETİM -->
   <div class="card">
-    <div class="card-header"><span class="card-title">⚙️ Üretim Bilgileri</span></div>
+    <div class="card-header">
+      <span class="card-title">⚙️ Üretim Bilgileri</span>
+      <span id="urunSayac" style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;"></span>
+    </div>
     <div class="card-body">
-      <div class="row2">
-        <div class="field">
-          <label>Ürün Kodu</label>
-          <div class="ac-wrap">
-            <input type="text" id="productCode" placeholder="Kod ara…" autocomplete="off"
-              oninput="acOpen('prod',this.value)" onfocus="acOpen('prod',this.value)" onkeydown="acKey(event,'prod')">
-            <div class="ac-dropdown" id="acProd"></div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Ürün Adı</label>
-          <div class="ac-wrap">
-            <input type="text" id="productName" placeholder="Ad ara…" autocomplete="off"
-              oninput="acOpen('prodName',this.value)" onfocus="acOpen('prodName',this.value)" onkeydown="acKey(event,'prodName')">
-            <div class="ac-dropdown" id="acProdName"></div>
-          </div>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Operasyon Kodu</label>
-          <div class="ac-wrap">
-            <input type="text" id="opCode" placeholder="Kod ara…" autocomplete="off"
-              oninput="acOpen('op',this.value)" onfocus="acOpen('op',this.value)" onkeydown="acKey(event,'op')">
-            <div class="ac-dropdown" id="acOp"></div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Operasyon Adı</label>
-          <div class="ac-wrap">
-            <input type="text" id="opName" placeholder="Ad ara…" autocomplete="off"
-              oninput="acOpen('opName',this.value)" onfocus="acOpen('opName',this.value)" onkeydown="acKey(event,'opName')">
-            <div class="ac-dropdown" id="acOpName"></div>
-          </div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Üretim Miktarı (Adet)</label>
-        <div class="num-wrap">
-          <button class="nbtn" onpointerdown="startStep(-1)" onpointerup="stopStep()" ontouchend="stopStep()">−</button>
-          <input type="number" id="qtyInput" value="0" min="0">
-          <button class="nbtn" onpointerdown="startStep(1)" onpointerup="stopStep()" ontouchend="stopStep()">+</button>
-        </div>
-      </div>
+      <div id="urunList"></div>
+      <button class="btn-add-durus" style="border-color:var(--accent2);color:var(--accent2);" onclick="addUrun()">＋ Ürün Ekle</button>
     </div>
   </div>
 
@@ -264,6 +244,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <!-- Özet şerit -->
       <div class="ozet-serit">
         <div class="ozet-item"><div class="ozet-label">Vardiya</div><div class="ozet-val blue" id="ozetVardiya">—</div></div>
+        <div class="ozet-item"><div class="ozet-label">Mola</div><div class="ozet-val" style="color:var(--yellow)" id="ozetMola">60 dk</div></div>
         <div class="ozet-item"><div class="ozet-label">Duruş</div><div class="ozet-val red" id="ozetDurus">0 dk</div></div>
         <div class="ozet-item"><div class="ozet-label">Net Çalışma</div><div class="ozet-val green" id="ozetNet">—</div></div>
       </div>
@@ -294,7 +275,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* ═══════════════════════════════════════════════
    ⚙️  AYARLAR — Buraya Apps Script URL'nizi girin
 ═══════════════════════════════════════════════ */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZqtONyRH6c3a8PFTmKV5GTx-zUiE2cdHqiePIsxlFZorr1uBHjUzhk-U0eJUYMn_zmQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2PXo0SXUUorl1jd_f710-35KtjPu5wo71ORDr_NeFMwwJk7Sz90MD-DSzwkx_KXezyg/exec";
 // Örnek: "https://script.google.com/macros/s/AKfyc.../exec"
 
 /* ═══════════════════════════════════════════════
@@ -349,10 +330,11 @@ const PRODUCTS=[
 ];
 
 const OPERATIONS=[
-  ["OP-010","TORNALAMA"],["OP-020","FREZELEME"],["OP-030","TAŞLAMA"],
-  ["OP-040","DELİK DELME"],["OP-050","RAYBALAMA"],["OP-060","DİŞ AÇMA"],
-  ["OP-070","AZDIRMA"],["OP-080","HONİNG"],["OP-090","KALİBRASYON"],
-  ["OP-100","MONTAJ"],["OP-110","KONTROL"],["OP-120","PAKETLEME"]
+  ["İGÜ-04","İNDÜKSİYON"],["İGÜ-08","SEMENTASYON"],
+  ["OP-02","AZDIRMA"],["OP-06","BOYA"],["OP-10","CNC-1"],
+  ["OP-11","CNC-2"],["OP-12","CNC-3"],["OP-13","CNC-4"],
+  ["OP-28","KESME"],["OP-33","OVALAMA"],["OP-39","PRESLEME-1"],
+  ["OP-51","YATAY İŞLEM (CNC)"],["OP-54","ZIMBA BASMA"]
 ];
 
 /* ═══════════════════════════════════════════════
@@ -385,6 +367,7 @@ window.addEventListener('DOMContentLoaded', () => {
   buildMachineList();
   checkScriptUrl();
   calcVardiya();
+  addUrun(); // Başlangıçta 1 boş ürün
 });
 
 function checkScriptUrl() {
@@ -427,9 +410,9 @@ function selectMachine(gi, mi) {
   document.getElementById('selMachineName').textContent = g.machines[mi];
   document.getElementById('selGroupName').textContent = g.name;
   document.getElementById('headerSub').textContent = g.machines[mi] + ' — ' + g.name;
-  // Operatör listesi
-  const sel = document.getElementById('operatorSel'); sel.innerHTML = '';
-  g.operators.forEach(op => { const o=document.createElement('option');o.value=op;o.textContent=op;sel.appendChild(o); });
+  // Operatör listesini autocomplete'e yükle
+  AC_CFG.oper.list = g.operators;
+  document.getElementById('operatorInput').value = '';
   // Ekranları geçiş
   document.getElementById('machineSelectScreen').style.display = 'none';
   document.getElementById('formScreen').style.display = 'block';
@@ -452,9 +435,34 @@ function changeMachine() {
 function selShift(el, v) {
   document.querySelectorAll('.spill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active'); curShift = v;
-  document.getElementById('varBas').value = v==='GÜNDÜZ'?'08:00':'20:00';
-  document.getElementById('varBit').value  = v==='GÜNDÜZ'?'18:00':'08:00';
+  document.getElementById('varBas').value = v==='GÜNDÜZ'?'08:00':'21:00';
+  document.getElementById('varBit').value  = v==='GÜNDÜZ'?'18:00':'06:00';
+  // Gece vardiyasında mesai toggle gizle
+  document.getElementById('mesaiRow').style.display = v==='GECE' ? 'none' : 'flex';
+  if(v==='GECE') document.getElementById('mesaiToggle').checked = false;
   calcVardiya();
+}
+
+function onMesaiChange() {
+  const cb = document.getElementById('mesaiToggle');
+  const slider = document.getElementById('mesaiSlider');
+  const thumb  = document.getElementById('mesaiThumb');
+  if(cb.checked) {
+    slider.style.background='#3b82f6'; slider.style.borderColor='#3b82f6';
+    thumb.style.transform='translateX(22px)'; thumb.style.background='#fff';
+  } else {
+    slider.style.background=''; slider.style.borderColor='';
+    thumb.style.transform=''; thumb.style.background='';
+  }
+  calcVardiya();
+}
+
+function getMolaDk() {
+  // GECE: 90 dk sabit
+  // GÜNDÜZ mesaisiz: 60 dk
+  // GÜNDÜZ mesaili: 75 dk
+  if(curShift==='GECE') return 90;
+  return document.getElementById('mesaiToggle').checked ? 75 : 60;
 }
 
 function timeDiff(t1,t2) {
@@ -468,16 +476,23 @@ function timeDiff(t1,t2) {
 function calcVardiya() {
   const sure = timeDiff(document.getElementById('varBas').value, document.getElementById('varBit').value);
   document.getElementById('vardiyaSure').textContent = sure>0 ? sure+' dk' : '—';
+  // Mola bilgisi güncelle
+  const mola = getMolaDk();
+  const molaText = curShift==='GECE'?'Mola: 90 dk (gece)':
+    document.getElementById('mesaiToggle').checked?'Mola: 75 dk (mesaili gündüz)':'Mola: 60 dk (gündüz)';
+  document.getElementById('molaInfo').textContent = molaText;
   updateOzet();
 }
 
 function updateOzet() {
   const vSure = timeDiff(document.getElementById('varBas').value, document.getElementById('varBit').value);
+  const mola  = getMolaDk();
   const toplamDurus = duruslarTemp.reduce((s,d)=>s+(d.sure||0),0);
-  const net = vSure - toplamDurus;
+  const net = vSure - mola - toplamDurus;
   document.getElementById('ozetVardiya').textContent = vSure>0?vSure+' dk':'—';
+  document.getElementById('ozetMola').textContent    = mola+' dk';
   document.getElementById('ozetDurus').textContent   = toplamDurus+' dk';
-  document.getElementById('ozetNet').textContent     = net>0?net+' dk':'—';
+  document.getElementById('ozetNet').textContent     = vSure>0?(net>0?net+' dk':'0 dk'):'—';
   document.getElementById('ozetNet').className       = 'ozet-val '+(net>=0?'green':'red');
 }
 
@@ -492,14 +507,6 @@ function removeDurus(id) {
   duruslarTemp = duruslarTemp.filter(d=>d.id!==id);
   renderDurusList(); updateOzet();
 }
-function buildDurusOpts(sel) {
-  let prev=''; let h='<option value="">— Seçiniz —</option>';
-  DURUS_DATA.forEach(([k,a,al])=>{
-    if(a!==prev){h+=`</optgroup><optgroup label="${a}">`;prev=a;}
-    h+=`<option value="${k}"${sel===k?' selected':''}>${k} — ${al}</option>`;
-  });
-  return h+'</optgroup>';
-}
 function renderDurusList() {
   const list=document.getElementById('durusList'); list.innerHTML='';
   duruslarTemp.forEach((d,idx)=>{
@@ -511,8 +518,13 @@ function renderDurusList() {
         <button class="durus-rm" onclick="removeDurus('${d.id}')">✕</button>
       </div>
       <div class="durus-body">
-        <div class="field"><label>Duruş Kodu</label>
-          <select onchange="onKodChange('${d.id}',this.value)">${buildDurusOpts(d.kod)}</select>
+        <div class="field">
+          <label>Duruş Kodu</label>
+          <div class="ac-wrap">
+            <input type="text" id="dkod_${d.id}" value="${d.kod?d.kod+' — '+d.alt:''}" placeholder="Kod veya açıklama ara…" autocomplete="off"
+              oninput="acDurus('${d.id}',this.value)" onfocus="acDurus('${d.id}',this.value)">
+            <div class="ac-dropdown" id="acDurus_${d.id}"></div>
+          </div>
         </div>
         <div class="row2">
           <div class="field"><label>Ana Tip</label><input type="text" id="ana_${d.id}" value="${d.ana}" readonly style="color:var(--accent2)"></div>
@@ -529,13 +541,41 @@ function renderDurusList() {
   });
   document.getElementById('durusSayac').textContent = duruslarTemp.length ? duruslarTemp.length+' duruş' : '';
 }
-function onKodChange(id,kod) {
-  const row=DURUS_DATA.find(r=>r[0]===kod)||['','',''];
-  const d=duruslarTemp.find(x=>x.id===id); if(!d) return;
-  d.kod=kod; d.ana=row[1]; d.alt=row[2];
-  document.getElementById('ana_'+id).value=row[1];
-  document.getElementById('alt_'+id).value=row[2];
+
+function acDurus(id, q) {
+  const dd = document.getElementById('acDurus_'+id);
+  const inputEl = document.getElementById('dkod_'+id);
+  document.querySelectorAll('[id^="acDurus_"]').forEach(el=>{ if(el.id!=='acDurus_'+id) el.classList.remove('open'); });
+  if(!q){ dd.classList.remove('open'); return; }
+  const ql = q.toLowerCase();
+  const hits = DURUS_DATA.filter(([k,a,al])=>k.toLowerCase().includes(ql)||al.toLowerCase().includes(ql)||a.toLowerCase().includes(ql)).slice(0,10);
+  if(!hits.length){ dd.classList.remove('open'); return; }
+  dd._hits = hits;
+  dd.innerHTML = hits.map((p,i)=>`<div class="ac-item" onmousedown="selDurus('${id}','${p[0]}','${p[1]}','${p[2].replace(/'/g,"\\'")}')">
+    <div class="ac-code">${p[0]}</div><div class="ac-name">${p[1]} — ${p[2]}</div></div>`).join('');
+  positionDropdown(inputEl, dd);
+  dd.classList.add('open');
 }
+
+function selDurus(id, kod, ana, alt) {
+  const d = duruslarTemp.find(x=>x.id===id); if(!d) return;
+  d.kod=kod; d.ana=ana; d.alt=alt;
+  document.getElementById('dkod_'+id).value = kod+' — '+alt;
+  document.getElementById('ana_'+id).value  = ana;
+  document.getElementById('alt_'+id).value  = alt;
+  document.getElementById('acDurus_'+id).classList.remove('open');
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ac-wrap')&&!e.target.closest('.ac-dropdown')){
+    document.querySelectorAll('[id^="acDurus_"],[id^="acUp_"],[id^="acUpn_"],[id^="acUo_"],[id^="acUon_"]').forEach(el=>el.classList.remove('open'));
+    closeAllAc();
+  }
+});
+window.addEventListener('scroll', ()=>{
+  document.querySelectorAll('[id^="acDurus_"],[id^="acUp_"],[id^="acUpn_"],[id^="acUo_"],[id^="acUon_"]').forEach(el=>el.classList.remove('open'));
+  closeAllAc();
+}, true);
 function onSaatChange(id) {
   const bas=document.getElementById('bas_'+id).value;
   const bit=document.getElementById('bit_'+id).value;
@@ -549,9 +589,134 @@ function onSaatChange(id) {
 }
 
 /* ═══════════════════════════════════════════════
-   NUM STEPPER
+   ÜRÜN LİSTESİ (çoklu)
 ═══════════════════════════════════════════════ */
-function startStep(dir){const el=document.getElementById('qtyInput');const s=()=>{el.value=Math.max(0,parseInt(el.value||0)+dir);};s();stepTimer=setInterval(s,120);}
+let urunlerTemp = [];
+let urunCounter = 0;
+
+function addUrun() {
+  const id = 'u_'+(++urunCounter);
+  urunlerTemp.push({id, productCode:'', productName:'', opCode:'', opName:'', qty:0});
+  renderUrunList();
+  // Yeni eklenen ürüne scroll
+  setTimeout(()=>document.getElementById('urun_'+id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function removeUrun(id) {
+  if(urunlerTemp.length<=1){ alert('En az 1 ürün olmalıdır.'); return; }
+  urunlerTemp=urunlerTemp.filter(u=>u.id!==id);
+  renderUrunList();
+}
+
+function renderUrunList() {
+  const list=document.getElementById('urunList'); list.innerHTML='';
+  urunlerTemp.forEach((u,idx)=>{
+    const div=document.createElement('div');
+    div.id='urun_'+u.id;
+    div.style.cssText='background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:visible;margin-bottom:10px;animation:fadeIn .2s ease;';
+    div.innerHTML=`
+      <div style="padding:8px 12px;background:rgba(6,182,212,.07);border-bottom:1px solid var(--border);border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:12px;font-weight:700;color:var(--accent2);">📦 Ürün ${idx+1}</span>
+        <button style="background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 6px;" onclick="removeUrun('${u.id}')" title="Sil">✕</button>
+      </div>
+      <div style="padding:10px 12px;display:flex;flex-direction:column;gap:10px;">
+        <div class="row2">
+          <div class="field">
+            <label>Ürün Kodu <span style="color:var(--red)">*</span></label>
+            <div class="ac-wrap">
+              <input type="text" id="pcode_${u.id}" value="${u.productCode}" placeholder="Kod ara…" autocomplete="off"
+                oninput="acUrun('${u.id}','prod',this.value)" onfocus="acUrun('${u.id}','prod',this.value)">
+              <div class="ac-dropdown" id="acUp_${u.id}"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Ürün Adı <span style="color:var(--red)">*</span></label>
+            <div class="ac-wrap">
+              <input type="text" id="pname_${u.id}" value="${u.productName}" placeholder="Ad ara…" autocomplete="off"
+                oninput="acUrun('${u.id}','prodName',this.value)" onfocus="acUrun('${u.id}','prodName',this.value)">
+              <div class="ac-dropdown" id="acUpn_${u.id}"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Operasyon Kodu <span style="color:var(--red)">*</span></label>
+            <div class="ac-wrap">
+              <input type="text" id="ocode_${u.id}" value="${u.opCode}" placeholder="Kod ara…" autocomplete="off"
+                oninput="acUrun('${u.id}','op',this.value)" onfocus="acUrun('${u.id}','op',this.value)">
+              <div class="ac-dropdown" id="acUo_${u.id}"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Operasyon Adı <span style="color:var(--red)">*</span></label>
+            <div class="ac-wrap">
+              <input type="text" id="oname_${u.id}" value="${u.opName}" placeholder="Ad ara…" autocomplete="off"
+                oninput="acUrun('${u.id}','opName',this.value)" onfocus="acUrun('${u.id}','opName',this.value)">
+              <div class="ac-dropdown" id="acUon_${u.id}"></div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Üretim Miktarı (Adet) <span style="color:var(--red)">*</span></label>
+          <div class="num-wrap">
+            <button class="nbtn" onpointerdown="startStepU('${u.id}',-1)" onpointerup="stopStep()" ontouchend="stopStep()">−</button>
+            <input type="number" id="qty_${u.id}" value="${u.qty}" min="0" oninput="urunlerTemp.find(x=>x.id==='${u.id}').qty=parseInt(this.value)||0">
+            <button class="nbtn" onpointerdown="startStepU('${u.id}',1)" onpointerup="stopStep()" ontouchend="stopStep()">+</button>
+          </div>
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('urunSayac').textContent = urunlerTemp.length>1?urunlerTemp.length+' ürün':'';
+}
+
+// Ürün autocomplete
+function acUrun(uid, type, q) {
+  const ddMap = {prod:'acUp_'+uid, prodName:'acUpn_'+uid, op:'acUo_'+uid, opName:'acUon_'+uid};
+  const inputMap = {prod:'pcode_'+uid, prodName:'pname_'+uid, op:'ocode_'+uid, opName:'oname_'+uid};
+  const dd = document.getElementById(ddMap[type]);
+  const inputEl = document.getElementById(inputMap[type]);
+  // Diğer ürün dropdownlarını kapat
+  document.querySelectorAll('[id^="acUp_"],[id^="acUpn_"],[id^="acUo_"],[id^="acUon_"]').forEach(el=>{
+    if(el!==dd) el.classList.remove('open');
+  });
+  closeAllAc();
+  if(!q){dd.classList.remove('open');return;}
+  const ql=q.toLowerCase();
+  let hits, list=type.startsWith('op')?OPERATIONS:PRODUCTS, byCode=(type==='prod'||type==='op');
+  hits=list.filter(([k,v])=>byCode?(k.toLowerCase().includes(ql)||v.toLowerCase().includes(ql)):v.toLowerCase().includes(ql)).slice(0,10);
+  if(!hits.length){dd.classList.remove('open');return;}
+  dd._hits=hits;
+  dd.innerHTML=hits.map(p=>`<div class="ac-item" onmousedown="acSelUrun('${uid}','${type}','${esc(p[0])}','${esc(p[1])}')">
+    <div class="ac-code">${p[0]}</div><div class="ac-name">${p[1]}</div></div>`).join('');
+  positionDropdown(inputEl, dd);
+  dd.classList.add('open');
+}
+
+function acSelUrun(uid, type, code, name) {
+  const u=urunlerTemp.find(x=>x.id===uid); if(!u) return;
+  if(type==='prod'||type==='prodName'){
+    u.productCode=code; u.productName=name;
+    document.getElementById('pcode_'+uid).value=code;
+    document.getElementById('pname_'+uid).value=name;
+    document.getElementById('acUp_'+uid).classList.remove('open');
+    document.getElementById('acUpn_'+uid).classList.remove('open');
+  } else {
+    u.opCode=code; u.opName=name;
+    document.getElementById('ocode_'+uid).value=code;
+    document.getElementById('oname_'+uid).value=name;
+    document.getElementById('acUo_'+uid).classList.remove('open');
+    document.getElementById('acUon_'+uid).classList.remove('open');
+  }
+}
+
+let stepTimer;
+function startStepU(uid,dir){
+  const el=document.getElementById('qty_'+uid);
+  const u=urunlerTemp.find(x=>x.id===uid);
+  const s=()=>{const v=Math.max(0,parseInt(el.value||0)+dir);el.value=v;if(u)u.qty=v;};
+  s(); stepTimer=setInterval(s,120);
+}
 function stopStep(){clearInterval(stepTimer);}
 
 /* ═══════════════════════════════════════════════
@@ -563,31 +728,73 @@ async function sendData() {
   // Textarea'ları senkronize et
   duruslarTemp.forEach(d=>{ const el=document.getElementById('not_'+d.id); if(el) d.not=el.value; });
 
+  // ── ZORUNLU ALAN KONTROLÜ ──
+  const operator = document.getElementById('operatorInput').value.trim();
+  if(!operator){ alert('⚠️ Operatör adını girin.'); return; }
+
+  // Ürün alanlarını textarea gibi senkronize et
+  urunlerTemp.forEach(u=>{
+    u.productCode = document.getElementById('pcode_'+u.id)?.value.trim()||u.productCode;
+    u.productName = document.getElementById('pname_'+u.id)?.value.trim()||u.productName;
+    u.opCode      = document.getElementById('ocode_'+u.id)?.value.trim()||u.opCode;
+    u.opName      = document.getElementById('oname_'+u.id)?.value.trim()||u.opName;
+    u.qty         = parseInt(document.getElementById('qty_'+u.id)?.value)||u.qty;
+  });
+
+  // Her ürünü kontrol et
+  const boslar=[];
+  urunlerTemp.forEach((u,i)=>{
+    const n=`Ürün ${i+1}`;
+    if(!u.productCode) boslar.push(`${n}: Ürün Kodu`);
+    if(!u.productName) boslar.push(`${n}: Ürün Adı`);
+    if(!u.opCode)      boslar.push(`${n}: Operasyon Kodu`);
+    if(!u.opName)      boslar.push(`${n}: Operasyon Adı`);
+    if(u.qty<=0)       boslar.push(`${n}: Üretim Miktarı (0 olamaz)`);
+  });
+  if(boslar.length>0){ alert('⚠️ Lütfen şu alanları doldurun:\n\n• '+boslar.join('\n• ')); return; }
+
   const g = GROUPS[selGrpIdx];
   const dateStr = new Date().toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
   const varBas  = document.getElementById('varBas').value;
   const varBit  = document.getElementById('varBit').value;
   const varSure = timeDiff(varBas, varBit);
-  const common  = {
+  const mesaiVar = curShift==='GÜNDÜZ' && document.getElementById('mesaiToggle').checked;
+  const molaDk  = getMolaDk();
+  const netVardiya = varSure - molaDk;
+
+  const baseCommon = {
     date:dateStr, vardiya:curShift, grup:g.name,
     machine:g.machines[selMachIdx],
-    operator:document.getElementById('operatorSel').value,
-    productCode:document.getElementById('productCode').value,
-    productName:document.getElementById('productName').value,
-    opCode:document.getElementById('opCode').value,
-    opName:document.getElementById('opName').value,
-    qty:parseInt(document.getElementById('qtyInput').value)||0,
+    operator,
+    mesai: mesaiVar?'EVET':'HAYIR',
+    molaDk,
   };
 
-  // Satırları oluştur: D35 + gün içi duruşlar
   const rows = [];
-  // D35 — Vardiya tanım satırı
-  rows.push({...common, durusKod:'D35', durusAna:'DİĞER', durusAlt:'VARDİYA BAŞLANGIÇ VE BİTİŞİ SAATLERİ',
-    durusBas:varBas, durusBit:varBit, durusSure:'', varSure, not:''});
-  // Gün içi duruşlar
-  duruslarTemp.forEach(d=>{
-    rows.push({...common, durusKod:d.kod, durusAna:d.ana, durusAlt:d.alt,
-      durusBas:d.bas, durusBit:d.bit, durusSure:d.sure||'', varSure:'', not:d.not});
+
+  // Her ürün için D35 + duruşlar ayrı satır bloğu
+  urunlerTemp.forEach((u,uidx)=>{
+    const uCommon = {...baseCommon,
+      productCode:u.productCode, productName:u.productName,
+      opCode:u.opCode, opName:u.opName, qty:u.qty
+    };
+    // D35 satırı (her üründe bir kez — ilk üründe varSure dolu, diğerlerinde boş)
+    rows.push({...uCommon,
+      durusKod:'D35', durusAna:'DİĞER', durusAlt:'VARDİYA BAŞLANGIÇ VE BİTİŞİ SAATLERİ',
+      durusBas:varBas, durusBit:varBit, durusSure:'',
+      varSure: uidx===0 ? netVardiya : '',
+      not:`Mola: ${molaDk} dk${mesaiVar?' (Mesaili)':''}${urunlerTemp.length>1?' | Ürün '+(uidx+1)+'/'+urunlerTemp.length:''}`
+    });
+    // Gün içi duruşlar (sadece ilk üründe, fazla satır şişmesin)
+    if(uidx===0){
+      duruslarTemp.forEach(d=>{
+        rows.push({...uCommon,
+          durusKod:d.kod, durusAna:d.ana, durusAlt:d.alt,
+          durusBas:d.bas, durusBit:d.bit, durusSure:d.sure||'',
+          varSure:'', not:d.not
+        });
+      });
+    }
   });
 
   // Gönder
@@ -595,13 +802,14 @@ async function sendData() {
   document.getElementById('sendBtn').disabled = true;
 
   try {
-    const res = await fetch(SCRIPT_URL, {
-      method:'POST',
-      body: JSON.stringify({rows}),
+    // GET yöntemi kullanıyoruz — Apps Script CORS kısıtlamasını aşmak için
+    const encoded = encodeURIComponent(JSON.stringify({rows}));
+    const res = await fetch(SCRIPT_URL + '?action=write&data=' + encoded, {
+      method: 'GET',
     });
     const json = await res.json();
     if (json.status === 'ok') {
-      showSuccess(common, rows.length);
+      showSuccess(operator, g.machines[selMachIdx], rows.length);
     } else {
       throw new Error(json.message || 'Sunucu hatası');
     }
@@ -613,57 +821,78 @@ async function sendData() {
   }
 }
 
-function showSuccess(common, rowCount) {
+function showSuccess(operator, machine, rowCount) {
   document.getElementById('formScreen').style.display   = 'none';
   document.getElementById('submitBar').style.display    = 'none';
   document.getElementById('successScreen').style.display = 'block';
+  const urunOzet = urunlerTemp.map((u,i)=>`${i+1}. ${u.productName||u.productCode} — ${u.qty} adet`).join('<br>');
   document.getElementById('successDetail').innerHTML =
-    `<b>${common.machine}</b> — ${common.vardiya} Vardiyası<br>` +
-    `Operatör: <b>${common.operator}</b><br>` +
+    `<b>${machine}</b> — ${curShift} Vardiyası<br>`+
+    `Operatör: <b>${operator}</b><br><br>`+
+    `<b>${urunlerTemp.length} ürün:</b><br>${urunOzet}<br><br>`+
     `${rowCount} satır Google Sheets'e kaydedildi.`;
 }
 
 function resetForm() {
   duruslarTemp=[]; durusCounter=0;
-  document.getElementById('qtyInput').value=0;
-  document.getElementById('productCode').value='';
-  document.getElementById('productName').value='';
-  document.getElementById('opCode').value='';
-  document.getElementById('opName').value='';
-  document.getElementById('varBas').value='08:00';
-  document.getElementById('varBit').value='18:00';
+  urunlerTemp=[]; urunCounter=0;
+  document.getElementById('operatorInput').value='';
+  document.getElementById('varBas').value = curShift==='GECE'?'21:00':'08:00';
+  document.getElementById('varBit').value = curShift==='GECE'?'06:00':'18:00';
+  document.getElementById('mesaiToggle').checked=false;
+  onMesaiChange();
   calcVardiya(); renderDurusList();
+  addUrun(); // başlangıçta 1 boş ürün
   document.getElementById('successScreen').style.display='none';
   document.getElementById('formScreen').style.display='block';
   document.getElementById('submitBar').style.display='block';
 }
 
 /* ═══════════════════════════════════════════════
-   AUTOCOMPLETE
+   AUTOCOMPLETE (sadece operatör için — ürünler acUrun ile)
 ═══════════════════════════════════════════════ */
 const AC_CFG={
-  prod:    {list:PRODUCTS,   ddId:'acProd',     codeId:'productCode', nameId:'productName', by:'code'},
-  prodName:{list:PRODUCTS,   ddId:'acProdName', codeId:'productCode', nameId:'productName', by:'name'},
-  op:      {list:OPERATIONS, ddId:'acOp',       codeId:'opCode',      nameId:'opName',      by:'code'},
-  opName:  {list:OPERATIONS, ddId:'acOpName',   codeId:'opCode',      nameId:'opName',      by:'name'},
+  oper:{list:[],ddId:'acOper',codeId:'operatorInput',nameId:null,by:'name'},
 };
+function positionDropdown(inputEl, dd) {
+  const rect = inputEl.getBoundingClientRect();
+  dd.style.left  = rect.left + 'px';
+  dd.style.top   = (rect.bottom + 4) + 'px';
+  dd.style.width = rect.width + 'px';
+}
+
 function acOpen(ns,q){
   const cfg=AC_CFG[ns],dd=document.getElementById(cfg.ddId);
+  const inputEl = document.getElementById(cfg.codeId);
   closeAllAc(cfg.ddId);
   if(!q){dd.classList.remove('open');return;}
   const ql=q.toLowerCase();
-  const hits=cfg.list.filter(([k,v])=>cfg.by==='code'?(k.toLowerCase().includes(ql)||v.toLowerCase().includes(ql)):v.toLowerCase().includes(ql)).slice(0,10);
-  if(!hits.length){dd.classList.remove('open');return;}
-  acFocusMap[ns]=-1; dd._hits=hits;
-  dd.innerHTML=hits.map((p,i)=>`<div class="ac-item" data-i="${i}" onmousedown="acSel('${ns}','${esc(p[0])}','${esc(p[1])}')">`+
-    `<div class="ac-code">${p[0]}</div><div class="ac-name">${p[1]}</div></div>`).join('');
+  let hits;
+  if(ns==='oper'){
+    hits=cfg.list.filter(v=>v.toLowerCase().includes(ql)).slice(0,10);
+    if(!hits.length){dd.classList.remove('open');return;}
+    dd._hits=hits; dd._ns=ns;
+    dd.innerHTML=hits.map((v,i)=>`<div class="ac-item" onmousedown="acSelOper('${v.replace(/'/g,"\\'")}')"><div class="ac-name" style="font-size:13px;">${v}</div></div>`).join('');
+  } else {
+    hits=cfg.list.filter(([k,v])=>cfg.by==='code'?(k.toLowerCase().includes(ql)||v.toLowerCase().includes(ql)):v.toLowerCase().includes(ql)).slice(0,10);
+    if(!hits.length){dd.classList.remove('open');return;}
+    dd._hits=hits; dd._ns=ns;
+    dd.innerHTML=hits.map((p,i)=>`<div class="ac-item" data-i="${i}" onmousedown="acSel('${ns}','${esc(p[0])}','${esc(p[1])}')">`+
+      `<div class="ac-code">${p[0]}</div><div class="ac-name">${p[1]}</div></div>`).join('');
+  }
+  acFocusMap[ns]=-1;
+  positionDropdown(inputEl, dd);
   dd.classList.add('open');
+}
+function acSelOper(name){
+  document.getElementById('operatorInput').value=name;
+  closeAllAc();
 }
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
 function acSel(ns,code,name){
   const cfg=AC_CFG[ns];
   document.getElementById(cfg.codeId).value=code;
-  document.getElementById(cfg.nameId).value=name;
+  if(cfg.nameId) document.getElementById(cfg.nameId).value=name;
   closeAllAc();
 }
 function acKey(e,ns){
