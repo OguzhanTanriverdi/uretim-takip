@@ -557,7 +557,7 @@ function selShift(el, v) {
   document.querySelectorAll('.spill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active'); curShift = v;
   document.getElementById('varBas').value = v==='GÜNDÜZ'?'08:00':'21:00';
-  document.getElementById('varBit').value = v==='GÜNDÜZ'?'18:00':'06:00';
+  document.getElementById('varBit').value = v==='GÜNDÜZ'?'18:00':'08:00';
   document.getElementById('mesaiRow').style.display = v==='GECE'?'none':'flex';
   if(v==='GECE') { document.getElementById('mesaiToggle').checked=false; onMesaiChange(); }
   calcVardiya();
