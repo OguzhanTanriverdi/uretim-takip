@@ -296,7 +296,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 /* ═══════════ AYARLAR ═══════════ */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWuukI_GJDtEbCAVnNmq00P5hC3P6_-z-v_iVTzw5qzc_f2XKm-80CqlY3v7m6-7y-Rw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx76tXnlunZ42o13FJmS62TvCpVK3dzLQd8SyU-zkmeypWx3F4rjELpMEbhzp9USTH3rA/exec";
 
 /* ═══════════ VERİ — Google Sheets'ten yüklenir ═══════════ */
 // Başlangıç değerleri (yükleme tamamlanana kadar boş)
@@ -557,7 +557,7 @@ function selShift(el, v) {
   document.querySelectorAll('.spill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active'); curShift = v;
   document.getElementById('varBas').value = v==='GÜNDÜZ'?'08:00':'21:00';
-  document.getElementById('varBit').value = v==='GÜNDÜZ'?'18:00':'08:00';
+  document.getElementById('varBit').value = v==='GÜNDÜZ'?'18:00':'06:00';
   document.getElementById('mesaiRow').style.display = v==='GECE'?'none':'flex';
   if(v==='GECE') { document.getElementById('mesaiToggle').checked=false; onMesaiChange(); }
   calcVardiya();
