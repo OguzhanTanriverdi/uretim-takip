@@ -191,7 +191,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div>
 
 <!-- ══════════════════════════════════
-     EKRAN: MAKİNA SEÇİM
+     EKRAN: QR PROMPT (giriş sonrası)
+══════════════════════════════════ -->
+<div class="screen" id="screenQRPrompt">
+  <div style="max-width:360px;margin:0 auto;text-align:center;padding-top:20px;">
+    <div style="font-size:72px;margin-bottom:20px;">📱</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:10px;" id="qrWelcomeName"></div>
+    <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px;">
+      Makinenizin yanındaki<br>
+      <b style="color:var(--accent2);">QR kodu okutun</b><br>
+      Form otomatik açılacaktır.
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:12px;color:var(--muted);">
+      🔒 Güvenlik nedeniyle makine listesi gösterilmemektedir.<br>Sadece QR kod ile makine seçilebilir.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     EKRAN: MAKİNA SEÇİM (sadece admin/test için)
 ══════════════════════════════════ -->
 <div class="screen" id="screenMachine">
   <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Makinenizi Seçin</div>
@@ -384,13 +402,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Normal açılış
+  // Normal açılış — QR yoksa QR prompt göster
   if (curOperator) {
-    goToMachineSelect();
+    updateOpBadge();
+    showScreen('screenQRPrompt');
+    document.getElementById('headerSub').textContent = curOperator.name;
   } else {
     showScreen('screenLogin');
   }
-  updateOpBadge();
 });
 
 /* ═══════════ EKRAN YÖNETİMİ ═══════════ */
@@ -398,6 +417,9 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.getElementById('submitBar').style.display = id==='screenForm' ? 'block' : 'none';
+  if (id==='screenQRPrompt' && curOperator) {
+    document.getElementById('qrWelcomeName').textContent = '👋 Merhaba, ' + curOperator.name.split(' ')[0] + '!';
+  }
 }
 
 function updateOpBadge() {
@@ -463,16 +485,15 @@ async function doLogin() {
     const json = await res.json();
     hideOverlay();
     if (json.status === 'ok') {
-      // Sunucudan gelen ismi kullan (Sheets'tekiyle birebir aynı olur)
       curOperator = {name: json.name, sifre};
       try { sessionStorage.setItem('ut_session', JSON.stringify(curOperator)); } catch(e){}
       updateOpBadge();
-      document.getElementById('headerSub').textContent = name;
+      document.getElementById('headerSub').textContent = json.name;
       if (pendingMachine) {
         goToMachine(pendingMachine);
         pendingMachine = null;
       } else {
-        goToMachineSelect();
+        showScreen('screenQRPrompt');
       }
     } else {
       errEl.textContent = '❌ ' + json.message;
