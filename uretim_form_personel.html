@@ -463,7 +463,8 @@ async function doLogin() {
     const json = await res.json();
     hideOverlay();
     if (json.status === 'ok') {
-      curOperator = {name, sifre};
+      // Sunucudan gelen ismi kullan (Sheets'tekiyle birebir aynı olur)
+      curOperator = {name: json.name, sifre};
       try { sessionStorage.setItem('ut_session', JSON.stringify(curOperator)); } catch(e){}
       updateOpBadge();
       document.getElementById('headerSub').textContent = name;
