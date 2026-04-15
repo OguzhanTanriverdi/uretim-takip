@@ -161,7 +161,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="reg-icon">📝</div>
     <div class="reg-title">Yeni Personel Kaydı</div>
     <div class="reg-sub">Ad soyadınızı ve 6 haneli bir şifre belirleyin.<br>Bu şifreyi unutmayın — her gün giriş yaparken kullanacaksınız.</div>
-    <div class="field"><label>Ad Soyad</label><input type="text" id="regName" placeholder="MUSTAFA YILMAZ" autocomplete="off" style="text-transform:uppercase"></div>
+    <div class="field"><label>Ad Soyad</label><input type="text" id="regName" placeholder="MUSTAFA YILMAZ" autocomplete="off" oninput="this.value=this.value.toLocaleUpperCase('tr-TR')"></div>
     <div class="field">
       <label>6 Haneli Şifre Belirle</label>
       <input type="number" id="regSifre" placeholder="000000" min="0" max="999999" autocomplete="off">
@@ -183,7 +183,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div style="font-size:48px;margin-bottom:14px;">🔐</div>
     <div style="font-size:19px;font-weight:700;margin-bottom:6px;">Giriş Yap</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;" id="loginMachineInfo"></div>
-    <div class="field"><label>Ad Soyad</label><input type="text" id="loginName" placeholder="MUSTAFA YILMAZ" autocomplete="off" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="field"><label>Ad Soyad</label><input type="text" id="loginName" placeholder="MUSTAFA YILMAZ" autocomplete="off" oninput="this.value=this.value.toLocaleUpperCase('tr-TR')"></div>
     <div class="field"><label>6 Haneli Şifre</label><input type="number" id="loginSifre" placeholder="000000" min="0" max="999999" autocomplete="off"></div>
     <button class="btn-primary" onclick="doLogin()">Giriş →</button>
     <div class="error-msg" id="loginError"></div>
@@ -296,7 +296,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 /* ═══════════ AYARLAR ═══════════ */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyR_Ewnl1gPT_1gwtVUXd86qXB4BYF2eEfgBk2kUUsWeEz4WmT9M64XCWWeN37RZHwX/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq7fjwuwfUTIhkQbiozfpS55U5CihCqcxuTx-JWAs10HbszlbECRbhS9qPMU7EImNtIw/exec";
 
 /* ═══════════ VERİ — Google Sheets'ten yüklenir ═══════════ */
 // Başlangıç değerleri (yükleme tamamlanana kadar boş)
@@ -412,7 +412,7 @@ function updateOpBadge() {
 
 /* ═══════════ KAYIT ═══════════ */
 async function doRegister() {
-  const name   = document.getElementById('regName').value.trim().toUpperCase();
+  const name   = document.getElementById('regName').value.trim().toLocaleUpperCase('tr-TR');
   const sifre  = document.getElementById('regSifre').value.trim();
   const sifre2 = document.getElementById('regSifre2').value.trim();
   const errEl  = document.getElementById('regError');
@@ -448,7 +448,7 @@ async function doRegister() {
 
 /* ═══════════ GİRİŞ ═══════════ */
 async function doLogin() {
-  const name  = document.getElementById('loginName').value.trim().toUpperCase();
+  const name  = document.getElementById('loginName').value.trim().toLocaleUpperCase('tr-TR');
   const sifre = document.getElementById('loginSifre').value.trim();
   const errEl = document.getElementById('loginError');
   errEl.textContent = '';
