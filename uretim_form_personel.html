@@ -888,9 +888,8 @@ async function sendData(){
 }
 
 function newEntry(){
-  showScreen('screenMachine');
-  buildMachineList('');
-  document.getElementById('headerSub').textContent=curOperator?.name||'Makine seçin';
+  showScreen('screenQRPrompt');
+  document.getElementById('headerSub').textContent=curOperator?.name||'';
 }
 
 /* ═══════════ AUTOCOMPLETE YARDIMCILARI ═══════════ */
